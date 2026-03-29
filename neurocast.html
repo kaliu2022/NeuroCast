@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroCast</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">NeuroCast<span class="logo-sub">Neuro podcast generator powered by ElevenLabs</span></div>
+  <div class="onair"><div class="dot" id="dot"></div>ON AIR</div>
+</div>
+
+<div class="key-panel">
+  <div class="panel-label">Voice Configuration</div>
+  <div class="key-grid">
+    <div class="field">
+      <label>Host Voice</label>
+      <select id="host-voice">
+        <option value="sB7vwSCyX0tQmU24cW2C">Jon (Male)</option>
+        <option value="EXAVITQu4vr4xnSDxMaL">Bella (Female)</option>
+        <option value="wWWn96OtTHu1sn8SRGEr">Hale (Male)</option>
+        <option value="yoZ06aMxZJJ28mfd3POQ">Sam (Female)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Narrator Voice</label>
+      <select id="narr-voice">
+        <option value="EXAVITQu4vr4xnSDxMaL">Bella (Female)</option>
+        <option value="sB7vwSCyX0tQmU24cW2C">Jon (Male)</option>
+        <option value="wWWn96OtTHu1sn8SRGEr">Hale (Male)</option>
+        <option value="yoZ06aMxZJJ28mfd3POQ">Sam (Female)</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="main-grid">
+  <div class="panel">
+    <div class="plabel">Neural State Input</div>
+    <div class="slider-group">
+      <div class="slider-row">
+        <div><span class="slider-name">Arousal</span><div class="slider-hint">calm ←→ activated</div></div>
+        <span class="slider-val sv-s" id="v-s">50</span>
+      </div>
+      <input type="range" id="sl-s" min="0" max="100" value="50" />
+    </div>
+    <div class="slider-group">
+      <div class="slider-row">
+        <div><span class="slider-name">Valence</span><div class="slider-hint">negative ←→ positive</div></div>
+        <span class="slider-val sv-f" id="v-f">50</span>
+      </div>
+      <input type="range" id="sl-f" min="0" max="100" value="50" />
+    </div>
+    <div class="slider-group">
+      <div class="slider-row">
+        <div><span class="slider-name">Attention</span><div class="slider-hint">distracted ←→ focused</div></div>
+        <span class="slider-val sv-e" id="v-e">50</span>
+      </div>
+      <input type="range" id="sl-e" min="0" max="100" value="50" />
+    </div>
+    <div class="mood-box">
+      <div class="mood-lbl">Detected Mood</div>
+      <div class="mood-name" id="mood-name">Balanced</div>
+      <div class="mood-genre" id="mood-genre">→ Neutral Drama</div>
+    </div>
+    <div style="margin-top:12px; display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+      <div class="mood-hint" title="High arousal, negative valence, diffuse attention">😰 Anxious</div>
+      <div class="mood-hint" title="Very high arousal, negative valence">⚡ Wired</div>
+      <div class="mood-hint" title="High arousal, positive valence">🌟 Euphoric</div>
+      <div class="mood-hint" title="Moderate arousal, positive valence, high attention">🌊 Flow State</div>
+      <div class="mood-hint" title="High attention, moderate arousal">🔬 Hyper-focused</div>
+      <div class="mood-hint" title="Low arousal, negative valence">🪫 Burnt Out</div>
+      <div class="mood-hint" title="Low arousal, neutral valence, diffuse attention">🌙 Dreamy</div>
+      <div class="mood-hint" title="Everything in the middle">⚖️ Balanced</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="plabel">Brainwave Activity</div>
+    <canvas id="wave-canvas"></canvas>
+    <div class="metrics">
+      <div class="metric"><div class="metric-lbl">Alpha</div><div class="metric-val" id="m-alpha" style="color:#6af7c8">8.4 Hz</div></div>
+      <div class="metric"><div class="metric-lbl">Beta</div><div class="metric-val" id="m-beta" style="color:#f76a8c">18.2 Hz</div></div>
+      <div class="metric"><div class="metric-lbl">Theta</div><div class="metric-val" id="m-theta" style="color:#7c6af7">5.1 Hz</div></div>
+      <div class="metric"><div class="metric-lbl">Delta</div><div class="metric-val" id="m-delta" style="color:#f7d46a">2.3 Hz</div></div>
+    </div>
+  </div>
+</div>
+
+<button class="gen-btn" id="gen-btn" onclick="generate()">▶ Generate & Broadcast Episode</button>
+<div class="status" id="status"><div class="spinner"></div><span id="status-txt">Initializing...</span></div>
+
+<div class="player" id="player">
+  <div class="ep-num" id="ep-num">Episode #001</div>
+  <div class="ep-title" id="ep-title">Loading...</div>
+  <div class="ep-tag" id="ep-tag">Mood</div>
+  <div class="audio-controls" id="audio-controls">
+    <button class="ctrl-btn primary" id="play-btn">▶ Play</button>
+    <button class="ctrl-btn secondary" id="replay-btn">↺ Replay</button>
+    <div class="progress-wrap">
+      <div class="progress-track" id="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="time-display" id="time-display">0:00 / 0:00</div>
+    </div>
+  </div>
+  <div class="segments" id="segments"></div>
+  <div class="script-box" id="script-box"></div>
+</div>
+
+<!-- Add Copyright -->
+<div class="copyright">
+  <p>Created by Ethan Nguyen. All rights reserved.</p>
+  <p>&copy; NeuroHack Spring 2026 + ElevenLabs</p>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
