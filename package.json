@@ -1,0 +1,13 @@
+{
+  "name": "neurocast",
+  "version": "1.0.0",
+  "description": "Neuro-adaptive podcast generator powered by ElevenLabs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "license": "MIT"
+}

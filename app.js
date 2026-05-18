@@ -177,10 +177,11 @@ Respond ONLY with raw JSON, no markdown, no explanation:
       body: JSON.stringify({
         mood: { name: mood.name, genre: mood.genre },
         stress: S, focus: F, energy: E,
-        agentId: AGENT_ID, elKey: EL_KEY
+        agentId: AGENT_ID
       })
     });
 
+    if (r.status === 429) throw new Error('Rate limit reached — try again in an hour.');
     if (!r.ok) throw new Error('Server error ' + r.status);
     const data = await r.json();
     if (data.error) throw new Error(data.error);
@@ -213,12 +214,10 @@ Respond ONLY with raw JSON, no markdown, no explanation:
 }
 
 // ── ElevenLabs API Calls ──────────────────────────────────────────────────────
-const EL_KEY = 'your_elevenlabs_api_key_here'; // ← REPLACE WITH YOUR KEY
-
 async function tts(text, voiceId) {
   const r = await fetch(`/api/elevenlabs/v1/text-to-speech/${voiceId}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'xi-api-key': EL_KEY },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text, model_id: 'eleven_multilingual_v2', output_format: 'mp3_44100_128' })
   });
   if (!r.ok) { const e = await r.text(); throw new Error(`ElevenLabs ${r.status}: ${e.substring(0,100)}`); }
@@ -229,7 +228,7 @@ async function generateMusic(moodName, durationSeconds) {
   const prompt = MUSIC_PROMPTS[moodName] || MUSIC_PROMPTS['Balanced'];
   const r = await fetch('/api/elevenlabs/v1/sound-generation', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'xi-api-key': EL_KEY },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text: prompt, duration_seconds: Math.min(durationSeconds, 30), prompt_influence: 0.4, model_id: 'eleven_text_to_sound_v2' })
   });
   if (!r.ok) { const e = await r.text(); throw new Error(`Music ${r.status}: ${e.substring(0,100)}`); }
@@ -239,7 +238,7 @@ async function generateMusic(moodName, durationSeconds) {
 async function generateSfx(prompt, duration = 4) {
   const r = await fetch('/api/elevenlabs/v1/sound-generation', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'xi-api-key': EL_KEY },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text: prompt, duration_seconds: duration, prompt_influence: 0.5, model_id: 'eleven_text_to_sound_v2' })
   });
   if (!r.ok) { const e = await r.text(); throw new Error(`SFX ${r.status}: ${e.substring(0,80)}`); }
@@ -398,8 +397,10 @@ async function generate() {
     } catch(e) {
       document.getElementById(`sst-${i}`).textContent = 'error';
       segEls[i].classList.remove('generating'); segEls[i].classList.add('done');
-      setStat('TTS error: ' + e.message);
-      continue;
+      const msg = e.message.includes('429') ? 'Rate limit reached — try again in an hour.' : 'Audio error: ' + e.message;
+      setStat(msg);
+      btn.disabled = false;
+      return;
     }
 
     if (sfxBlob && seg.role === 'narrator') orderedBlobs.push({ blob: sfxBlob, role: 'sfx' });

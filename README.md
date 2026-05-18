@@ -38,7 +38,7 @@ NeuroCast reads three neuroscience-grounded inputs — Arousal, Valence, and Att
 
 ```
 neurocast/
-├── neurocast.html   # App structure — no inline CSS or JS
+├── index.html   # App structure — no inline CSS or JS
 ├── styles.css       # All styling and animations
 ├── app.js           # All logic: mood detection, audio generation, mixing, player
 ├── server.js        # Local proxy server — forwards API calls to ElevenLabs
@@ -57,11 +57,17 @@ neurocast/
 ### Setup
 
 1. Clone or download all files into the same folder
-2. Open `app.js` and replace the `EL_KEY` constant with your ElevenLabs API key:
-   ```js
-   const EL_KEY = 'your_elevenlabs_api_key_here';
+2. Copy `.env.example` to `.env` and add your ElevenLabs API key:
    ```
-3. *(Optional)* To enable AI-generated scripts, create an ElevenLabs Conversational Agent:
+   EL_KEY=your_elevenlabs_api_key_here
+   ```
+   The key lives only on the server — it is never sent to the browser.
+3. Start the server:
+   ```bash
+   npm start
+   ```
+4. Open your browser at [http://localhost:3000](http://localhost:3000)
+5. *(Optional)* To enable AI-generated scripts, create an ElevenLabs Conversational Agent:
    - Go to [elevenlabs.io/app/conversational-ai](https://elevenlabs.io/app/conversational-ai)
    - Create a new agent with this system prompt:
      ```
@@ -71,12 +77,6 @@ neurocast/
      {"title":"...","segments":[{"role":"host","text":"..."},{"role":"narrator","text":"..."},{"role":"narrator","text":"..."},{"role":"host","text":"..."}]}
      ```
    - Copy the Agent ID and update `AGENT_ID` in `app.js`
-
-4. Start the server:
-   ```bash
-   node server.js
-   ```
-5. Open your browser at [http://localhost:3000](http://localhost:3000)
 
 ---
 
@@ -142,7 +142,7 @@ Default voice configuration:
 | Host | Jon — Male |
 | Narrator | Bella — Female |
 
-Additional options available in the UI: Hale, Sam, etc. Voice IDs can be replaced in `neurocast.html`.
+Additional options available in the UI: Hale, Sam, etc. Voice IDs can be replaced in `index.html`.
 
 ---
 
