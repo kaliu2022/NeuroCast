@@ -4,6 +4,8 @@
 
 NeuroCast reads three neuroscience-grounded inputs — Arousal, Valence, and Attention — detects your mood, and generates a fully produced podcast episode: an original story, narrated by distinct voices, with contextual sound effects and mood-matched background music, all mixed into a single audio file.
 
+Live Demo: https://neurocast.up.railway.app
+
 ---
 
 ## Features
