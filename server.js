@@ -212,7 +212,7 @@ Respond ONLY with raw JSON, no markdown:
       return;
     }
     const ext = path.extname(filePath);
-    const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css' }[ext] || 'text/plain';
+    const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml' }[ext] || 'text/plain';
     res.writeHead(200, { 'content-type': mime });
     res.end(data);
   });
